@@ -4,6 +4,12 @@ This python-based Web Service was built based on [Asynchronous Server App Boiler
 
 ## To dos
 - [ ] Initial features
+    - [x] Sample HTML Web Page
+    - [x] Sample WebSocket
+    - [x] Sample Logging
+    - [x] Sample Pub/Sub
+    - [x] Sample Module register & load
+    - [x] Sample adding Routes
     - [ ] Sample GET request
     - [ ] Sample POST request
     - [ ] Sample POST /auth, get and save access_token into `Session`
