@@ -8,10 +8,8 @@ This python-based Web Service was built based on [Asynchronous Server App Boiler
     - [ ] Sample POST request
     - [ ] Sample POST /auth, get and save access_token into `Session`
     - [ ] Save, load, and delete Session variable
-    - [ ] Sample Endpoint: Read URL variable, e.g. `/users/<username>`
     - [ ] Database Connection (MongoDB)
         - [ ] Simple connection
-        - [ ] Integration with ORM / sqlalchemy / similar
         - [ ] Default CRUD
             - [ ] POST /auth/login
             - [ ] GET /auth/logout
@@ -20,5 +18,6 @@ This python-based Web Service was built based on [Asynchronous Server App Boiler
             - [ ] PUT /users
             - [ ] DELETE /users
             - [ ] GET /users/register_between/<start_date>/<end_date>
+        - [ ] Integration with ORM / sqlalchemy / similar
     - [ ] Create routes (Cleaned codes)
     - [ ] Create Database Model
