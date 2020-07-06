@@ -16,5 +16,4 @@ class User(mongoengine.Document):
         if not self.created_at:
             self.created_at = datetime.datetime.now()
         self.updated_at = datetime.datetime.now()
-        # print(" ---- self.updated_at:", self.updated_at)
         return super(User, self).save(*args, **kwargs)
