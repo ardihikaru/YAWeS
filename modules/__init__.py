@@ -1,6 +1,7 @@
 import asab
 from .my_service import MyService
-from .database import DatabaseService
+# from .database import DatabaseService
+from .database_mongoengine import DatabaseService
 
 
 class Modules(asab.Module):
