@@ -161,6 +161,8 @@ class WebService(asab.Application):
 
     async def get_user(self, request):
         resp_data = self.db_data.find_all("Users")
+
+        print(" -- resp_data = ", resp_data)
         return aiohttp.web.json_response(web_response_format(resp_data))
 
     @asab.web.rest.json_schema_handler({
