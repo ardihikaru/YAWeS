@@ -1,6 +1,6 @@
 from aiohttp_route_decorator import RouteCollector
 import aiohttp
-import asyncio
+from controllers.user.user import User
 
 route = RouteCollector()
 
@@ -10,6 +10,8 @@ async def index(request):
     if request.method == 'POST':
         json_data = await request.json()
         print(" --- json_data = ", json_data)
+
+        resp = User().register(json_data)
 
         return aiohttp.web.json_response({
             "data": "Hello API user; Method = %s" % request.method

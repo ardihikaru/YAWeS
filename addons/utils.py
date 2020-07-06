@@ -46,3 +46,44 @@ def web_response_format(data, msg="-", is_list=False):
     }
 
     return obj_resp
+
+
+def json_load_str(str_json, type="list"):
+    if len(str_json) > 0:
+        return json.loads(str_json)
+    else:
+        if type == "list":
+            return []
+        elif type == "dict":
+            return {}
+        else:
+            return []
+
+
+def get_json_template(response=False, results=None, total=0, message=None):
+    result = {
+        "response": response,
+        "message": message,
+        "results": results,
+        "total": total
+    }
+
+    if results == -1:
+        result.pop('results', None)
+    else:
+        if total == 0 and isinstance(results, (list,)):
+            result["total"] = len(results)
+
+        if results is None:
+            result["message"] = "Data Not Found."
+            if message:
+                result["message"] = message
+                # else:
+        #     result["response"]      = True
+
+    if total == -1:
+        result.pop('total', None)
+    if message is None:
+        result.pop('message', None)
+    return result
+
