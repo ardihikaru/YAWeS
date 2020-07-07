@@ -1,12 +1,13 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from addons.utils import json_load_str, get_json_template
-from addons.database_blacklist.blacklist_helpers import (
-    revoke_current_token, extract_identity
-)
-from .user_model import UserModel
-# from database.user.user import User as UserModel
+# from addons.database_blacklist.blacklist_helpers import (
+#     revoke_current_token, extract_identity
+# )
+# from .user_model import UserModel
+from database.user.user import UserModel
 # from .user_functions import get_all_users, store_jwt_data, get_user_by_username, get_user_by_date, \
-from .user_functions import get_all_users, store_jwt_data, get_user_by_username, \
+# from .user_functions import get_all_users, store_jwt_data, get_user_by_username, \
+from database.user.user_functions import get_all_users, store_jwt_data, get_user_by_username, \
     del_user_by_userid, upd_user_by_userid, get_user_by_userid, insert_new_data, get_user_data_between
     # del_user_by_userid, upd_user_by_userid, get_user_by_userid, insert_new_data, get_user_data_by_hobby, \
     # get_user_data_between, del_all_data
