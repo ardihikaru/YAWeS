@@ -108,24 +108,14 @@ def upd_user_by_userid(db_model, userid, new_data):
 
 
 def store_jwt_data(json_data):
-    # my_identity = {
-    #     "username": json_data["username"]
-    # }
-    # print(" -- @ store_jwt_data ... exp_delta = ", asab.Config["jwt"]["exp_delta_seconds"], type(asab.Config["jwt"]["exp_delta_seconds"]))
     payload = {
         "username": json_data["username"],
         'exp': datetime.utcnow() + timedelta(seconds=int(asab.Config["jwt"]["exp_delta_seconds"]))
     }
     access_token = jwt.encode(payload, asab.Config["jwt"]["secret_key"], algorithm=asab.Config["jwt"]["algorithm"])
-    # jwt_token = jwt.encode(payload, asab.Config["jwt"]["secret_key"], asab.Config["jwt"]["algorithm"])
-    print(" --- access_token: ", access_token)
-    print(" --- TYPE access_token: ", type(access_token))
-
-    # access_token = create_access_token(identity=my_identity)
-    # refresh_token = create_refresh_token(identity=my_identity)
 
     decoded_data = jwt.decode(access_token, verify=False)
-    print(" --- decoded_data: ", decoded_data)
+    # print(" --- decoded_data: ", decoded_data)
 
     # access_jti = get_jti(encoded_token=access_token)
     # refresh_jti = get_jti(encoded_token=refresh_token)

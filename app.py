@@ -9,6 +9,8 @@ from aiohttp_jwt import JWTMiddleware, login_required, check_permissions, match_
 import aiohttp  # https://github.com/hzlmn/aiohttp-jwt/blob/master/example/basic.py
 import jwt
 from mongoengine import connect
+from addons.database_blacklist.blacklist_helpers import is_token_revoked
+from addons.redis.my_redis import MyRedis
 import json
 
 
@@ -40,21 +42,46 @@ class WebService(asab.Application):
         container.WebApp.middlewares.append(JWTMiddleware(
             secret_or_pub_key=asab.Config["jwt"]["secret_key"],
             request_property="user",
-            whitelist=[r"/api/users*", r"/api/auth/login"],
-            # whitelist=[r"/api/auth/login"],
+            # whitelist=[r"/api/users*", r"/api/auth/login"],
+            whitelist=[r"/api/auth/login"],
             # credentials_required=False,
             token_getter=self.get_token,
+            is_revoked=self.is_revoked,
         ))
         # container.WebApp.router.add_get('/coba', self.protected_handler)
         container.WebApp.router.add_get("/public", self.public_handler)
         container.WebApp.router.add_get("/protected", self.auth_required_handler)
         container.WebApp.router.add_get("/protected2", self.protected_handler)
 
+    async def is_revoked(self, request, payload):
+        access_token = None
+        try:
+            access_token = (request.headers['authorization']).replace("Bearer ", "")
+
+            #  check if the access token has been blacklisted or not
+            if is_token_revoked(MyRedis(asab.Config).get_rc(), access_token):
+                return True
+        except:
+            pass
+        return False
+
     async def get_token(self, request):
         access_token = None
         try:
             access_token = (request.headers['authorization']).replace("Bearer ", "")
             access_token = access_token.encode()
+
+            #  check if the access token has been blacklisted or not
+            # if is_token_revoked(MyRedis(asab.Config).get_rc(), asab.Config, access_token):
+            #     print(" ---- access token blacklisted !!!!!!!")
+            #     return aiohttp.web.Response(
+            #             text=json.dumps({
+            #                 "status": 402,
+            #                 "message": "Your access token has been expired",
+            #             }, indent=4),
+            #             status=402,
+            #             content_type='application/json'
+            #         )
         except:
             pass
         return access_token

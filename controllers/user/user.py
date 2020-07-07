@@ -1,8 +1,9 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from addons.utils import json_load_str, get_json_template
-# from addons.database_blacklist.blacklist_helpers import (
-#     revoke_current_token, extract_identity
-# )
+from addons.database_blacklist.blacklist_helpers import (
+    revoke_current_token
+    # revoke_current_token, extract_identity
+)
 # from .user_model import UserModel
 from database.user.user import UserModel
 # from .user_functions import get_all_users, store_jwt_data, get_user_by_username, get_user_by_date, \
@@ -12,10 +13,13 @@ from database.user.user_functions import get_all_users, store_jwt_data, get_user
     # del_user_by_userid, upd_user_by_userid, get_user_by_userid, insert_new_data, get_user_data_by_hobby, \
     # get_user_data_between, del_all_data
 import datetime
+import asab
+from addons.redis.my_redis import MyRedis
 
 
-class User:
+class User(MyRedis):
     def __init__(self):
+        super().__init__(asab.Config)
         self.status_code = 200
         self.resp_status = None
         self.resp_data = None
@@ -43,7 +47,7 @@ class User:
 
     def revokesExistedToken(self, encoded_token=None):
         if encoded_token:
-            revoke_current_token(encoded_token, {"revoke": True})
+            revoke_current_token(self.rc, asab.Config, encoded_token, {"revoke": True})
 
     def do_logout(self, encoded_token=None):
         self.revokesExistedToken(encoded_token)
