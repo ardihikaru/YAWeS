@@ -60,12 +60,13 @@ def json_load_str(str_json, type="list"):
             return []
 
 
-def get_json_template(response=False, results=None, total=0, message=None):
+def get_json_template(response=False, results=None, total=0, message=None, status=200):
     result = {
         "response": response,
         "message": message,
         "results": results,
-        "total": total
+        "total": total,
+        "status": status
     }
 
     if results == -1:

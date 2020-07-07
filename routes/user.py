@@ -1,6 +1,7 @@
 from aiohttp_route_decorator import RouteCollector
 import aiohttp
 from controllers.user.user import User
+import json
 # from aiohttp_jwt import login_required
 
 route = RouteCollector()
@@ -33,17 +34,34 @@ async def index(request):
 
 @route('/ranges/{start_date}/{end_date}', method='GET')
 async def get_ranged_user(request):
-    print(" ---- start_date: ", request.match_info['start_date'])
-    print(" ---- end_date: ", request.match_info['end_date'])
-    return aiohttp.web.json_response({
-        "data": "Hello user get"
-    })
+    try:
+        start_date = str(request.match_info['start_date'])
+        end_date = str(request.match_info['end_date'])
+        resp = User().get_data_between(start_date, end_date)
 
-@route('/ranges', method='GET')
-async def get_ranged_user(request):
-    return aiohttp.web.json_response({
-        "data": "Hello user DISINI .."
-    })
+        # return aiohttp.web.json_response(resp)
+        return aiohttp.web.Response(
+            text=json.dumps(resp, indent=4),
+            status=resp["status"],
+            content_type='application/json'
+        )
+    except:
+        return aiohttp.web.Response(
+            text=json.dumps({
+                "status": 422,
+                "message": "Unprocessable Entity",
+            }, indent=4),
+            status=422,
+            content_type='application/json'
+        )
+    # print(" --- request.match_info: ", type(request.match_info), request.match_info)
+
+
+# @route('/ranges', method='GET')
+# async def get_ranged_user(request):
+#     return aiohttp.web.json_response({
+#         "data": "Hello user DISINI .."
+#     })
 
 # @route('/users', methods=['GET'])
 # async def post_user(request):

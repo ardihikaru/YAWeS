@@ -15,11 +15,15 @@ import datetime
 
 class User:
     def __init__(self):
+        self.status_code = 200
         self.resp_status = None
         self.resp_data = None
         self.total_records = 0
         self.msg = None
         self.password_hash = None
+
+    def set_status_code(self, code):
+        self.status_code = code
 
     def set_resp_status(self, status):
         self.resp_status = status
@@ -208,28 +212,27 @@ class User:
         return date_time
 
     def trx_get_data_between(self, start_date, end_date):
-        # start_date = self.__str_date2datetime(start_date)
-        # end_date = self.__str_date2datetime(end_date)
-        # if start_date == end_date:
-        start_date = self.__sync_start_date(start_date)
-        end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
-            # print(" --- MASUK IF ..")
-            # is_valid, user_data, msg, self.total_records = get_user_by_date(UserModel, start_date)
-            # print(" --- is_valid, user_data = ", is_valid, user_data)
-        # else:
-        is_valid, user_data, msg, self.total_records = get_user_data_between(UserModel, start_date, end_date)
-        self.set_resp_status(is_valid)
-        # self.set_msg("Fetching data failed.")
-        self.set_msg(msg)
-        if is_valid:
-            self.set_msg("Collecting data success.")
+        try:
+            start_date = self.__sync_start_date(start_date)
+            end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
+            is_valid, user_data, msg, self.total_records = get_user_data_between(UserModel, start_date, end_date)
+            self.set_resp_status(is_valid)
+            self.set_msg(msg)
+            if is_valid:
+                self.set_msg("Collecting data success.")
 
-        self.set_resp_data(user_data)
+            self.set_resp_data(user_data)
+        except:
+            self.set_resp_status(False)
+            self.set_msg("Unprocessable Entity")
+            self.set_resp_data({})
+            self.set_status_code(422)
+
 
     def get_data_between(self, start_date, end_date):
         self.trx_get_data_between(start_date, end_date)
         return get_json_template(response=self.resp_status, results=self.resp_data, total=self.total_records,
-                                 message=self.msg)
+                                 message=self.msg, status=self.status_code)
 
     # def trx_del_all_data(self, ses, get_args=None):
     #     is_valid, user_data, msg = del_all_data(ses, User, get_args)
