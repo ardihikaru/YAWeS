@@ -8,10 +8,15 @@ from routes import user as route_user
 from aiohttp_jwt import JWTMiddleware, login_required, check_permissions, match_any
 import aiohttp  # https://github.com/hzlmn/aiohttp-jwt/blob/master/example/basic.py
 import jwt
+from mongoengine import connect
+import json
 
 
 class WebService(asab.Application):
     async def initialize(self):
+        # Connect Database
+        connect('flask-mongodb')
+
         # Loading the web service module
         self.add_module(asab.web.Module)
 
@@ -33,12 +38,12 @@ class WebService(asab.Application):
 
         # Enable exception to JWT middleware
         container.WebApp.middlewares.append(JWTMiddleware(
-            secret_or_pub_key=asab.Config["config"]["secret_key"],
+            secret_or_pub_key=asab.Config["jwt"]["secret_key"],
             request_property="user",
-            whitelist=[r"/api/users*", r"/api/auth/login"],
-            credentials_required=False,
+            # whitelist=[r"/api/users*", r"/api/auth/login"],
+            whitelist=[r"/api/auth/login"],
+            # credentials_required=False,
             token_getter=self.get_token,
-            # whitelist=[r"/api/auth/login"],
         ))
         # container.WebApp.router.add_get('/coba', self.protected_handler)
         container.WebApp.router.add_get("/public", self.public_handler)
@@ -46,11 +51,46 @@ class WebService(asab.Application):
         container.WebApp.router.add_get("/protected2", self.protected_handler)
 
     async def get_token(self, request):
-        print(" --- disini ..")
-        # return jwt.encode({"username": "johndoe"}, asab.Config["config"]["secret_key"])
-        return jwt.encode(
-            {"username": "johndoe", "scopes": ["username:johndoe"]}, asab.Config["config"]["secret_key"]
-        )
+        access_token = None
+        try:
+            access_token = (request.headers['authorization']).replace("Bearer ", "")
+            access_token = access_token.encode()
+        except:
+            pass
+        return access_token
+
+        # print(" --- access_token:", access_token)
+        # print(" --- TYPE access_token:", type(access_token))
+        # try:
+        #     # decoded_data = jwt.decode(access_token, verify=False)
+        #     # print(" --- decoded_data: ", decoded_data)
+        #     payload = jwt.decode(access_token, asab.Config["jwt"]["secret_key"],
+        #                          algorithm=asab.Config["jwt"]["algorithm"])
+        #     print(" --- payload:", payload)
+        #
+        # # except jwt.ExpiredSignatureError:
+        # #     print(" --- ExpiredSignatureError ..")
+        # #     pass
+        #
+        # except jwt.ExpiredSignature:
+        #     print(" --- token expired ..")
+        #     # return aiohttp.web.Response(
+        #     #     text=json.dumps({
+        #     #         "status": 402,
+        #     #         "message": "Your access token has been expired",
+        #     #     }, indent=4),
+        #         # status=402,
+        #         # content_type='application/json'
+        #     # )
+        #     return access_token
+        #     # pass
+
+        # # return aiohttp.web.json_response({'user': request['user']})
+        # return jwt.encode({"username": "johndoe"}, asab.Config["jwt"]["secret_key"])
+        # # return aiohttp.web.json_response({'user': request['user']})
+        # # return jwt.encode(
+        # #     {"username": "johndoe", "scopes": ["username:johndoe"]}, asab.Config["jwt"]["secret_key"]
+        # # )
 
     # async def protected_handler(self, request):
     #     return aiohttp.web.json_response({'user': request['payload']})

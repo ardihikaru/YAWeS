@@ -5,6 +5,7 @@ from addons.utils import mongo_list_to_dict, mongo_dict_to_dict
 from addons.encoders.json_encoder import JSONEncoder
 from addons.encoders.mongoengine_encoder import MongoEncoder
 
+
 class DatabaseService(asab.Service):
     def __init__(self, app, service_name):
         super().__init__(app, service_name)

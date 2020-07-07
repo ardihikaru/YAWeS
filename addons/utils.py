@@ -87,3 +87,15 @@ def get_json_template(response=False, results=None, total=0, message=None):
         result.pop('message', None)
     return result
 
+def clean_mongo_insert_resp(data):
+    if "created_at" in data and \
+            data["created_at"] is not None and \
+            "$date" in data["created_at"]:
+        data["created_at"] = datetime.fromtimestamp(int(str(data["created_at"]["$date"])[:-3])).strftime("%Y-%m-%d, "
+                                                                                                         "%H:%M:%S")
+
+    if "updated_at" in data and \
+            data["updated_at"] is not None and \
+            "$date" in data["updated_at"]:
+        data["updated_at"] = datetime.fromtimestamp(int(str(data["updated_at"]["$date"])[:-3])).strftime("%Y-%m-%d, "
+                                                                                                         "%H:%M:%S")
