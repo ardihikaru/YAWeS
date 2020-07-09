@@ -1,5 +1,5 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-from addons.utils import json_load_str, get_json_template, get_unprocessable_request_json
+from addons.utils import json_load_str, get_json_template, get_unprocessable_request_json, get_synced_date
 from addons.database_blacklist.blacklist_helpers import (
     revoke_current_token
     # revoke_current_token, extract_identity
@@ -226,16 +226,11 @@ class User(MyRedis):
         self.trx_get_data_by_userid(userid)
         return get_json_template(response=self.resp_status, results=self.resp_data, total=-1, message=self.msg)
 
-    def __sync_start_date(self, start_date):
-        date_obj = datetime.datetime.strptime(start_date, "%Y-%m-%d").date()
-        date_obj_new = date_obj - datetime.timedelta(days=1)
-        date_time = date_obj_new.strftime("%Y-%m-%d")
-        return date_time
-
-    def trx_get_data_between(self, start_date, end_date):
+    def trx_get_data_between(self, start_date_str, end_date_str):
         try:
-            start_date = self.__sync_start_date(start_date)
-            end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
+            start_date = get_synced_date(start_date_str, 0)
+            end_date = get_synced_date(end_date_str, -1)
+            
             is_valid, user_data, msg, self.total_records = get_user_data_between(UserModel, start_date, end_date)
             self.set_resp_status(is_valid)
             self.set_msg(msg)

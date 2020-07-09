@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import aiohttp
 
 
@@ -117,3 +117,10 @@ def get_unprocessable_request_json():
         "status": 422,
         "message": "Unprocessable Entity",
     }
+
+
+def get_synced_date(date_str, reduced_day=1):
+    date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
+    date_obj_new = date_obj - timedelta(days=reduced_day)
+    date_time = date_obj_new.strftime("%Y-%m-%d")
+    return date_time
