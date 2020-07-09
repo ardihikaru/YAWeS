@@ -106,10 +106,14 @@ def clean_mongo_insert_resp(data):
 
 def get_unprocessable_request():
     return aiohttp.web.Response(
-        text=json.dumps({
-            "status": 422,
-            "message": "Unprocessable Entity",
-        }, indent=4),
+        text=json.dumps(get_unprocessable_request_json(), indent=4),
         status=422,
         content_type='application/json'
     )
+
+
+def get_unprocessable_request_json():
+    return {
+        "status": 422,
+        "message": "Unprocessable Entity",
+    }
