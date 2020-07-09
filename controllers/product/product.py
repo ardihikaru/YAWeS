@@ -133,17 +133,17 @@ class Product(MyRedis):
             self.set_msg("Deleting data success.")
 
     def delete_data_by_id(self, json_data):
-        if "user_id" in json_data:
-            if isinstance(json_data["user_id"], str):
-                self.trx_del_data_by_id(json_data["user_id"])
-            elif isinstance(json_data["user_id"], list):
-                for user_id in json_data["user_id"]:
-                    self.trx_del_data_by_id(user_id)
+        if "_id" in json_data:
+            if isinstance(json_data["_id"], str):
+                self.trx_del_data_by_id(json_data["_id"])
+            elif isinstance(json_data["_id"], list):
+                for _id in json_data["_id"]:
+                    self.trx_del_data_by_id(_id)
             else:
                 return get_unprocessable_request_json()
             resp_data = {}
             if self.resp_status:
-                resp_data = "Deleted ids: {}".format(json_data["user_id"])
+                resp_data = "Deleted ids: {}".format(json_data["_id"])
             return get_json_template(response=self.resp_status, results=resp_data, total=-1, message=self.msg)
         else:
             return get_unprocessable_request_json()
@@ -158,10 +158,10 @@ class Product(MyRedis):
         self.set_resp_data(user_data)
 
     def update_data_by_id(self, json_data):
-        if "user_id" in json_data:
-            user_id = json_data["user_id"]
-            json_data.pop("user_id")
-            self.trx_upd_data_by_id(user_id, json_data)
+        if "_id" in json_data:
+            _id = json_data["_id"]
+            json_data.pop("_id")
+            self.trx_upd_data_by_id(_id, json_data)
             return get_json_template(response=self.resp_status, results=self.resp_data, total=-1, message=self.msg)
         else:
             return get_unprocessable_request_json()
