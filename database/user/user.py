@@ -1,16 +1,20 @@
-import mongoengine
+from mongoengine import Document, StringField, DateTimeField, EmailField, ListField, EmbeddedDocumentField
+from .address import Address
 import datetime
 
 
-class UserModel(mongoengine.Document):
+class UserModel(Document):
     meta = {'collection': 'Users'}
-    name = mongoengine.StringField(required=True, unique=False)
-    username = mongoengine.StringField(required=True, unique=True)
-    email = mongoengine.StringField(required=True, unique=True)
-    hobby = mongoengine.StringField(required=True, unique=False)
-    password = mongoengine.StringField(required=True, unique=False)
-    created_at = mongoengine.DateTimeField(default=datetime.datetime.utcnow)
-    updated_at = mongoengine.DateTimeField(default=datetime.datetime.now)
+    name = StringField(required=True, unique=False)
+    username = StringField(required=True, unique=True)
+    email = EmailField(required=True, unique=True)
+    hobby = ListField(StringField(max_length=30))
+    # hobby = ListField(required=True, unique=False)
+    password = StringField(required=True, unique=False)
+    address = ListField(EmbeddedDocumentField(Address))
+    # created_at = DateTimeField(default=datetime.datetime.utcnow)
+    created_at = DateTimeField(default=datetime.datetime.now)
+    updated_at = DateTimeField(default=datetime.datetime.now)
 
     def save(self, *args, **kwargs):
         if not self.created_at:

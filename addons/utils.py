@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+import aiohttp
 
 
 def mongo_list_to_dict(mongo_resp):
@@ -88,6 +89,7 @@ def get_json_template(response=False, results=None, total=0, message=None, statu
         result.pop('message', None)
     return result
 
+
 def clean_mongo_insert_resp(data):
     if "created_at" in data and \
             data["created_at"] is not None and \
@@ -100,3 +102,14 @@ def clean_mongo_insert_resp(data):
             "$date" in data["updated_at"]:
         data["updated_at"] = datetime.fromtimestamp(int(str(data["updated_at"]["$date"])[:-3])).strftime("%Y-%m-%d, "
                                                                                                          "%H:%M:%S")
+
+
+def get_unprocessable_request():
+    return aiohttp.web.Response(
+        text=json.dumps({
+            "status": 422,
+            "message": "Unprocessable Entity",
+        }, indent=4),
+        status=422,
+        content_type='application/json'
+    )
