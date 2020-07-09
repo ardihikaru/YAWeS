@@ -5,6 +5,8 @@ import asab.web.session
 from addons.session import AppSession
 from routes import auth as route_auth
 from routes import user as route_user
+from routes import product as route_product
+# from routes import part as route_part
 from aiohttp_jwt import JWTMiddleware, login_required, check_permissions, match_any
 import aiohttp  # https://github.com/hzlmn/aiohttp-jwt/blob/master/example/basic.py
 import jwt
@@ -31,6 +33,8 @@ class WebService(asab.Application):
         #  Config routes
         route_auth.route.add_to_router(container.WebApp.router, prefix='/api/auth')
         route_user.route.add_to_router(container.WebApp.router, prefix='/api/users')
+        route_product.route.add_to_router(container.WebApp.router, prefix='/api/products')
+        # route_part.route.add_to_router(container.WebApp.router, prefix='/api/parts')
 
         # Add a web session service
         asab.web.session.ServiceWebSession(self, "asab.ServiceWebSession", container.WebApp, session_class=AppSession)
@@ -42,7 +46,8 @@ class WebService(asab.Application):
         container.WebApp.middlewares.append(JWTMiddleware(
             secret_or_pub_key=asab.Config["jwt"]["secret_key"],
             request_property="user",
-            whitelist=[r"/api/users*", r"/api/auth/login"],
+            whitelist=[r"/api/products*", r"/api/parts*", r"/api/auth/login"],
+            # whitelist=[r"/api/users*", r"/api/auth/login"],
             # whitelist=[r"/api/auth/login"],
             # credentials_required=False,
             token_getter=self.get_token,
