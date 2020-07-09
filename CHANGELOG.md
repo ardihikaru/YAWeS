@@ -1,3 +1,8 @@
+## 0.4.0 (七月 09, 2020)
+  - Merge branch 'feature/api/update' into develop
+  - bug fixed: unable update the `updated_at` field
+  - Merge branch 'release-0.3' into develop
+
 ## 0.3.0 (七月 09, 2020)
   - Merge branch 'feature/api/delete' into develop
   - added Delete by ids: String (single id) or List (Multiple ids)
