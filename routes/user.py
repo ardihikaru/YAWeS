@@ -2,6 +2,7 @@ from aiohttp_route_decorator import RouteCollector
 import aiohttp
 from controllers.user.user import User
 import json
+from addons.utils import get_unprocessable_request
 # from aiohttp_jwt import login_required
 
 route = RouteCollector()
@@ -12,8 +13,11 @@ route = RouteCollector()
 # @login_required  # NO NEED if: credentials_required=False (app.py)
 async def index(request):
     if request.method == 'POST':
-        json_data = await request.json()
-        resp = User().register(json_data)
+        try:
+            json_data = await request.json()
+            resp = User().register(json_data)
+        except:
+            return get_unprocessable_request()
 
         return aiohttp.web.json_response(resp)
 
@@ -22,14 +26,22 @@ async def index(request):
         return aiohttp.web.json_response(resp)
 
     if request.method == 'PUT':
-        return aiohttp.web.json_response({
-            "data": "Hello API user; Method = %s" % request.method
-        })
+        try:
+            json_data = await request.json()
+            resp = User().update_data_by_userid(json_data)
+        except:
+            return get_unprocessable_request()
+
+        return aiohttp.web.json_response(resp)
 
     if request.method == 'DELETE':
-        return aiohttp.web.json_response({
-            "data": "Hello API user; Method = %s" % request.method
-        })
+        try:
+            json_data = await request.json()
+            resp = User().delete_data_by_userid(json_data)
+        except:
+            return get_unprocessable_request()
+
+        return aiohttp.web.json_response(resp)
 
 
 @route('/ranges/{start_date}/{end_date}', method='GET')
@@ -46,14 +58,7 @@ async def get_ranged_user(request):
             content_type='application/json'
         )
     except:
-        return aiohttp.web.Response(
-            text=json.dumps({
-                "status": 422,
-                "message": "Unprocessable Entity",
-            }, indent=4),
-            status=422,
-            content_type='application/json'
-        )
+        return get_unprocessable_request()
     # print(" --- request.match_info: ", type(request.match_info), request.match_info)
 
 

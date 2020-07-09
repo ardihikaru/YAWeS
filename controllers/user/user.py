@@ -1,5 +1,5 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-from addons.utils import json_load_str, get_json_template
+from addons.utils import json_load_str, get_json_template, get_unprocessable_request_json
 from addons.database_blacklist.blacklist_helpers import (
     revoke_current_token
     # revoke_current_token, extract_identity
@@ -178,11 +178,21 @@ class User(MyRedis):
         if is_valid:
             self.set_msg("Deleting data success.")
 
-        self.set_resp_data(user_data)
-
-    def delete_data_by_userid(self, userid):
-        self.trx_del_data_by_userid(userid)
-        return get_json_template(response=self.resp_status, results=self.resp_data, total=-1, message=self.msg)
+    def delete_data_by_userid(self, json_data):
+        if "user_id" in json_data:
+            if isinstance(json_data["user_id"], str):
+                self.trx_del_data_by_userid(json_data["user_id"])
+            elif isinstance(json_data["user_id"], list):
+                for user_id in json_data["user_id"]:
+                    self.trx_del_data_by_userid(user_id)
+            else:
+                return get_unprocessable_request_json()
+            resp_data = {}
+            if self.resp_status:
+                resp_data = "Deleted ids: {}".format(json_data["user_id"])
+            return get_json_template(response=self.resp_status, results=resp_data, total=-1, message=self.msg)
+        else:
+            return get_unprocessable_request_json()
 
     def trx_upd_data_by_userid(self, userid, json_data):
         is_valid, user_data, msg = upd_user_by_userid(UserModel, userid, new_data=json_data)
@@ -193,9 +203,15 @@ class User(MyRedis):
 
         self.set_resp_data(user_data)
 
-    def update_data_by_userid(self, userid, json_data):
-        self.trx_upd_data_by_userid(userid, json_data)
-        return get_json_template(response=self.resp_status, results=self.resp_data, total=-1, message=self.msg)
+    def update_data_by_userid(self, json_data):
+        if "user_id" in json_data:
+            user_id = json_data["user_id"]
+            json_data.pop("user_id")
+            self.trx_upd_data_by_userid(user_id, json_data)
+            return get_json_template(response=self.resp_status, results=self.resp_data, total=-1, message=self.msg)
+        else:
+            return get_unprocessable_request_json()
+
 
     def trx_get_data_by_userid(self, userid):
         is_valid, user_data, _ = get_user_by_userid(UserModel, userid)
