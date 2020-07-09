@@ -1,5 +1,5 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-from addons.utils import json_load_str, get_json_template
+from addons.utils import json_load_str, get_json_template, get_unprocessable_request_json
 from addons.database_blacklist.blacklist_helpers import (
     revoke_current_token
     # revoke_current_token, extract_identity
@@ -193,9 +193,15 @@ class User(MyRedis):
 
         self.set_resp_data(user_data)
 
-    def update_data_by_userid(self, userid, json_data):
-        self.trx_upd_data_by_userid(userid, json_data)
-        return get_json_template(response=self.resp_status, results=self.resp_data, total=-1, message=self.msg)
+    def update_data_by_userid(self, json_data):
+        if "user_id" in json_data:
+            user_id = json_data["user_id"]
+            json_data.pop("user_id")
+            self.trx_upd_data_by_userid(user_id, json_data)
+            return get_json_template(response=self.resp_status, results=self.resp_data, total=-1, message=self.msg)
+        else:
+            return get_unprocessable_request_json()
+
 
     def trx_get_data_by_userid(self, userid):
         is_valid, user_data, _ = get_user_by_userid(UserModel, userid)
