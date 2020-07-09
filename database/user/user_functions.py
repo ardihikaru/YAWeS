@@ -6,6 +6,7 @@ from addons.utils import mongo_list_to_dict, mongo_dict_to_dict
 from datetime import datetime
 import jwt
 from datetime import timedelta
+# from database.user.address import Address
 
 
 def insert_new_data(db_model, new_data, msg):
@@ -28,6 +29,24 @@ def insert_new_data(db_model, new_data, msg):
     new_data["id"] = str(inserted_data.id)
     new_data["created_at"] = inserted_data.created_at.strftime("%Y-%m-%d, %H:%M:%S")
     new_data["updated_at"] = inserted_data.updated_at.strftime("%Y-%m-%d, %H:%M:%S")
+
+    # #  update Address data if any
+    # if "address" in new_data:
+    #     print(" --- YA ADA COY ... _id = ", new_data["id"])
+    #     user = db_model.objects.get(id=new_data["id"])
+    #     print(" --- user_data:", user)
+    #     addresses = new_data["address"]
+    #     for addr in addresses:
+    #         print(" ---- address =", addr)
+    #         # db_model.address.append(addr)
+    #
+    #     # new_data.pop("address")
+
+    # ONLY Dummy: Delete again !!!
+    # user = db_model.objects.order_by('-id').first()  # get last id
+    # user = db_model.objects.get(id=new_data["id"])
+    # print(" --- user:", user)
+    # user.delete()
 
     if len(inserted_data) > 0:
         return True, inserted_data, msg
@@ -191,12 +210,12 @@ def get_user_data_between(db_model, start_date, end_date):
         # else:
         data = db_model.objects(
             Q(created_at__gte=start_date) & Q(created_at__lte=end_date)).all().to_json()
-                # Q(created_at__gte=datetime(2017, 11, 8)) & Q(created_at__lte=datetime(2020, 1, 9))).all()
+        # Q(created_at__gte=datetime(2017, 11, 8)) & Q(created_at__lte=datetime(2020, 1, 9))).all()
 
     except DoesNotExist:
-    # except Exception as e:
-    #     print(" ----- e:", e)
-    #     return False, [], str(e), 0
+        # except Exception as e:
+        #     print(" ----- e:", e)
+        #     return False, [], str(e), 0
         return False, [], "Data not found", 0
 
     dict_data = mongo_list_to_dict(data)
@@ -205,7 +224,6 @@ def get_user_data_between(db_model, start_date, end_date):
         return True, dict_data, None, len(dict_data)
     else:
         return False, None, "Data not found", 0
-
 
 # def del_all_data(ses, data_model, args=None):
 #     deleted_data = []
@@ -235,4 +253,3 @@ def get_user_data_between(db_model, start_date, end_date):
 #         return True, dict_drone, None
 #     else:
 #         return False, None, None
-
