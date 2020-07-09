@@ -35,9 +35,13 @@ async def index(request):
         return aiohttp.web.json_response(resp)
 
     if request.method == 'DELETE':
-        return aiohttp.web.json_response({
-            "data": "Hello API user; Method = %s" % request.method
-        })
+        try:
+            json_data = await request.json()
+            resp = User().delete_data_by_userid(json_data)
+        except:
+            return get_unprocessable_request()
+
+        return aiohttp.web.json_response(resp)
 
 
 @route('/ranges/{start_date}/{end_date}', method='GET')

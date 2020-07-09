@@ -42,8 +42,8 @@ class WebService(asab.Application):
         container.WebApp.middlewares.append(JWTMiddleware(
             secret_or_pub_key=asab.Config["jwt"]["secret_key"],
             request_property="user",
-            whitelist=[r"/api/users*", r"/api/auth/login"],
-            # whitelist=[r"/api/auth/login"],
+            # whitelist=[r"/api/users*", r"/api/auth/login"],
+            whitelist=[r"/api/auth/login"],
             # credentials_required=False,
             token_getter=self.get_token,
             is_revoked=self.is_revoked,
