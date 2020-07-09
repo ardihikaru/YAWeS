@@ -1,12 +1,12 @@
 from addons.utils import json_load_str, get_json_template, get_unprocessable_request_json, get_synced_date
-from database.product.product import ProductModel as DataModel
-from database.product.product_functions import get_all_data, del_data_by_id, upd_data_by_id, get_data_by_id, \
+from database.part.part import PartModel as DataModel
+from database.part.part_functions import get_all_data, del_data_by_id, upd_data_by_id, get_data_by_id, \
     insert_new_data, get_data_between_date
 import asab
 from addons.redis.my_redis import MyRedis
 
 
-class Product(MyRedis):
+class Part(MyRedis):
     def __init__(self):
         super().__init__(asab.Config)
         self.status_code = 200
@@ -29,7 +29,7 @@ class Product(MyRedis):
         self.msg = msg
 
     def trx_register(self, json_data):
-        msg = "Registering a new product succeed."
+        msg = "Registering a new part succeed."
 
         #  inserting
         is_valid, inserted_data, msg = insert_new_data(DataModel, json_data, msg)
