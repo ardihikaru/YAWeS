@@ -16,8 +16,15 @@ class UserModel(Document):
     created_at = DateTimeField(default=datetime.datetime.now)
     updated_at = DateTimeField(default=datetime.datetime.now)
 
-    def save(self, *args, **kwargs):
-        if not self.created_at:
-            self.created_at = datetime.datetime.now()
-        self.updated_at = datetime.datetime.now()
-        return super(UserModel, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if not self.created_at:
+    #         self.created_at = datetime.datetime.now()
+    #     self.updated_at = datetime.datetime.now()
+    #     return super(UserModel, self).save(*args, **kwargs)
+
+    def update(self, **kwargs):
+        # if not self.created_at:
+        #     self.created_at = datetime.datetime.now()
+        # self.updated_at = datetime.datetime.now()
+        kwargs["updated_at"] = datetime.datetime.now()
+        return super(UserModel, self).update(**kwargs)
